@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Oxanium:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Oxanium', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --color-neon: #FF0080;
+  --color-neon-dim: #CC0066;
+  --color-neon-glow: rgba(255, 0, 128, 0.35);
+  --color-glass: rgba(255, 255, 255, 0.05);
+  --color-glass-border: rgba(255, 255, 255, 0.12);
+  --color-glass-hover: rgba(255, 255, 255, 0.09);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #000;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  opacity: 0;
+}
+
+.font-display {
+  font-family: 'Oxanium', sans-serif;
+}
+
+/* Glass panel */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(32px) saturate(1.6);
+  -webkit-backdrop-filter: blur(32px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+/* Neon glow effects */
+.neon-text {
+  color: #FF0080;
+  text-shadow:
+    0 0 10px rgba(255, 0, 128, 0.9),
+    0 0 30px rgba(255, 0, 128, 0.6),
+    0 0 60px rgba(255, 0, 128, 0.3);
+}
+
+.neon-border {
+  border-color: #FF0080;
+  box-shadow:
+    0 0 8px rgba(255, 0, 128, 0.6),
+    inset 0 0 8px rgba(255, 0, 128, 0.1);
+}
+
+.neon-glow-btn {
+  background: #FF0080;
+  box-shadow:
+    0 0 16px rgba(255, 0, 128, 0.7),
+    0 0 40px rgba(255, 0, 128, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+
+.neon-glow-btn:hover {
+  box-shadow:
+    0 0 24px rgba(255, 0, 128, 0.9),
+    0 0 60px rgba(255, 0, 128, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.neon-glow-btn:active {
+  transform: translateY(0);
+}
+
+/* Orb backgrounds */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+/* Card hover */
+.glass-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 0, 128, 0.35);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(255, 0, 128, 0.1);
+}
+
+/* Stat bar */
+.stat-bar-fill {
+  background: linear-gradient(90deg, #FF0080, #FF66B2);
+  box-shadow: 0 0 10px rgba(255, 0, 128, 0.7);
+}
+
+/* Input */
+.glass-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.glass-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.glass-input:focus {
+  border-color: rgba(255, 0, 128, 0.6);
+  box-shadow: 0 0 0 3px rgba(255, 0, 128, 0.12);
+}
+
+/* Badge */
+.neon-badge {
+  background: rgba(255, 0, 128, 0.12);
+  border: 1px solid rgba(255, 0, 128, 0.4);
+  color: #FF0080;
+  text-shadow: 0 0 8px rgba(255, 0, 128, 0.6);
+}
+
+/* Tag pill */
+.tag-pill {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.tag-pill:hover, .tag-pill.active {
+  background: rgba(255, 0, 128, 0.15);
+  border-color: rgba(255, 0, 128, 0.45);
+  color: #FF0080;
+}
+
+/* Divider */
+.neon-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 0, 128, 0.5), transparent);
+}

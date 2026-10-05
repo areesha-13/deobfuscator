@@ -1,0 +1,10 @@
+{
+  "description": "Create stunning glassmorphism designs with neon pink and black themes to enhance UI projects with modern, vibrant visual effects easily.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
