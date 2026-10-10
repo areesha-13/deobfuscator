@@ -90,7 +90,7 @@ export default function Tool() {
     try {
       const formData = new FormData()
       formData.append('file', file)
-      const response = await fetch('http://localhost:8000/analyze', { method: 'POST', body: formData })
+      const response = await fetch('https://deobfuscator-production-e01c.up.railway.app/analyze', { method: 'POST', body: formData })
       if (!response.ok) { const err = await response.json(); throw new Error(err.detail || 'Analysis failed') }
       setResult(await response.json())
     } catch (err: any) {
@@ -101,7 +101,7 @@ export default function Tool() {
   async function handleDownloadReport() {
     if (!result) return
     try {
-      const response = await fetch('http://localhost:8000/report', {
+      const response = await fetch('https://deobfuscator-production-e01c.up.railway.app/report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(result),
