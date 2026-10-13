@@ -73,7 +73,7 @@ export default function About() {
               <div key={t.name} style={{ ...glass, padding: '24px 28px' }}>
                 <h3 style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: '1rem', color: '#fff', margin: '0 0 6px' }}>{t.name}</h3>
                 <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', color: '#FF0080', margin: '0 0 12px', fontStyle: 'italic' }}>{t.summary}</p>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.7, margin: 0 }}>{t.detail}</p>
+                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'rgba(255,255,255,0.88)', lineHeight: 1.7, margin: 0 }}>{t.detail}</p>
               </div>
             ))}
           </div>

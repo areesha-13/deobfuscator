@@ -128,7 +128,7 @@ function FeatureCard({ title, icon, description }: { title: string; icon: string
     <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{ ...glass, padding: 28, cursor: "default", transform: hovered ? "translateY(-6px)" : "translateY(0)", borderColor: hovered ? "rgba(255,0,128,0.35)" : "rgba(255,255,255,0.1)", boxShadow: hovered ? "0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(255,0,128,0.12)" : "none", transition: "transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease" }}>
       <span style={{ fontSize: "1.8rem", display: "block", marginBottom: 14 }}>{icon}</span>
       <h3 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1rem", color: hovered ? "#FF0080" : "#fff", margin: "0 0 10px", transition: "color 0.2s" }}>{title}</h3>
-      <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.875rem", color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: 0 }}>{description}</p>
+      <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.875rem", color: "rgba(255,255,255,0.85)", lineHeight: 1.7, margin: 0 }}>{description}</p>
     </div>
   )
 }
@@ -164,14 +164,13 @@ export default function Landing() {
 
           <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap", opacity: vis.cta ? 1 : 0, transform: vis.cta ? "translateY(0)" : "translateY(16px)", transition: "opacity 0.6s ease, transform 0.6s ease" }}>
             <button onClick={() => navigate("/tool")} onMouseEnter={e => (e.target as HTMLElement).style.transform = "translateY(-2px)"} onMouseLeave={e => (e.target as HTMLElement).style.transform = "translateY(0)"} style={{ fontFamily: "Orbitron, sans-serif", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.15em", padding: "14px 36px", background: "#FF0080", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer", boxShadow: "0 0 24px rgba(255,0,128,0.7), 0 0 60px rgba(255,0,128,0.3)", transition: "transform 0.15s" }}>ANALYZE A BINARY</button>
-            <button onClick={() => navigate("/about")} onMouseEnter={e => { (e.target as HTMLElement).style.borderColor = "rgba(255,0,128,0.5)"; (e.target as HTMLElement).style.color = "#fff" }} onMouseLeave={e => { (e.target as HTMLElement).style.borderColor = "rgba(255,255,255,0.2)"; (e.target as HTMLElement).style.color = "rgba(255,255,255,0.75)" }} style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.875rem", padding: "14px 32px", background: "transparent", color: "rgba(255,255,255,0.75)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 10, cursor: "pointer", transition: "border-color 0.2s, color 0.2s" }}>Learn More</button>
           </div>
 
           <div style={{ display: "flex", gap: 40, justifyContent: "center", marginTop: 52, flexWrap: "wrap", opacity: vis.cta ? 1 : 0, transition: "opacity 0.6s ease 0.3s" }}>
             {[["5", "Techniques Detected"], ["3", "Deobfuscation Methods"], ["< 10s", "Analysis Time"], ["PDF", "Exportable Reports"]].map(([v, l]) => (
               <div key={l} style={{ textAlign: "center" }}>
                 <p style={{ fontFamily: "Orbitron, sans-serif", fontWeight: 900, fontSize: "1.6rem", color: "#FF0080", textShadow: "0 0 10px rgba(255,0,128,0.7)", margin: "0 0 4px" }}>{v}</p>
-                <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.75rem", color: "rgba(255,255,255,0.55)", margin: 0 }}>{l}</p>
+                <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.75rem", color: "rgba(255,255,255,0.85)", margin: 0 }}>{l}</p>
               </div>
             ))}
           </div>
@@ -186,10 +185,9 @@ export default function Landing() {
       </section>
 
       <section style={{ padding: "80px 48px", maxWidth: 900, margin: "0 auto" }}>
-        <p style={{ fontFamily: "Orbitron, sans-serif", fontSize: "0.7rem", letterSpacing: "0.2em", color: "#FF0080", marginBottom: 16 }}>THE PROBLEM</p>
         <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "clamp(1.6rem, 3vw, 2.4rem)", color: "#fff", margin: "0 0 24px", lineHeight: 1.3 }}>Reverse engineering is fragmented.<br />Reversor unifies it.</h2>
-        <p style={{ fontFamily: "Inter, sans-serif", fontSize: "1.05rem", color: "rgba(255,255,255,0.7)", lineHeight: 1.8, margin: "0 0 16px" }}>Security analysts today switch between Ghidra, IDA Pro, FLOSS, and Detect-It-Easy just to understand a single binary. Each tool solves one piece of the problem — none of them talk to each other, and none produce output a non-technical stakeholder can read.</p>
-        <p style={{ fontFamily: "Inter, sans-serif", fontSize: "1.05rem", color: "rgba(255,255,255,0.7)", lineHeight: 1.8, margin: 0 }}>Reversor is the unified layer. One upload, one pipeline, one plain-English report — covering identification and reversal of the most common obfuscation techniques.</p>
+        <p style={{ fontFamily: "Inter, sans-serif", fontSize: "1.05rem", color: "rgba(255,255,255,0.88)", lineHeight: 1.8, margin: "0 0 16px" }}>Security analysts today switch between Ghidra, IDA Pro, FLOSS, and Detect-It-Easy just to understand a single binary. Each tool solves one piece of the problem — none of them talk to each other, and none produce output a non-technical stakeholder can read.</p>
+        <p style={{ fontFamily: "Inter, sans-serif", fontSize: "1.05rem", color: "rgba(255,255,255,0.88)", lineHeight: 1.8, margin: 0 }}>Reversor is the unified layer. One upload, one pipeline, one plain-English report — covering identification and reversal of the most common obfuscation techniques.</p>
       </section>
 
       <div style={divider} />
@@ -197,7 +195,7 @@ export default function Landing() {
       <section style={{ padding: "0 48px 80px", maxWidth: 1000, margin: "0 auto" }}>
         <p style={{ fontFamily: "Orbitron, sans-serif", fontSize: "0.7rem", letterSpacing: "0.2em", color: "#FF0080", marginBottom: 16, textAlign: "center" }}>LIVE DEMO</p>
         <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "clamp(1.6rem, 3vw, 2.2rem)", color: "#fff", margin: "0 0 12px", textAlign: "center" }}>Watch the pipeline run</h2>
-        <p style={{ fontFamily: "Inter, sans-serif", fontSize: "1rem", color: "rgba(255,255,255,0.55)", textAlign: "center", margin: "0 0 36px" }}>A simulated run on a packed, obfuscated sample — same pipeline as the real tool.</p>
+        <p style={{ fontFamily: "Inter, sans-serif", fontSize: "1rem", color: "rgba(255,255,255,0.85)", textAlign: "center", margin: "0 0 36px" }}>A simulated run on a packed, obfuscated sample — same pipeline as the real tool.</p>
         <LiveDemo />
       </section>
 
@@ -225,7 +223,7 @@ export default function Landing() {
             <span style={{ fontFamily: "Orbitron, sans-serif", fontWeight: 900, fontSize: "2.5rem", color: "rgba(255,0,128,0.25)", flexShrink: 0, lineHeight: 1 }}>{s.n}</span>
             <div>
               <h3 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1.1rem", color: "#fff", margin: "0 0 8px" }}>{s.t}</h3>
-              <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.95rem", color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: 0 }}>{s.d}</p>
+              <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.95rem", color: "rgba(255,255,255,0.85)", lineHeight: 1.7, margin: 0 }}>{s.d}</p>
             </div>
           </div>
         ))}
@@ -235,7 +233,7 @@ export default function Landing() {
 
       <section style={{ padding: "0 48px 120px", textAlign: "center" }}>
         <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "clamp(1.6rem, 3vw, 2.2rem)", color: "#fff", margin: "0 0 16px" }}>Ready to analyze a binary?</h2>
-        <p style={{ fontFamily: "Inter, sans-serif", fontSize: "1rem", color: "rgba(255,255,255,0.55)", margin: "0 0 40px" }}>No account required. Upload directly and get results in seconds.</p>
+        <p style={{ fontFamily: "Inter, sans-serif", fontSize: "1rem", color: "rgba(255,255,255,0.85)", margin: "0 0 40px" }}>No account required. Upload directly and get results in seconds.</p>
         <button onClick={() => navigate("/tool")} onMouseEnter={e => (e.target as HTMLElement).style.transform = "translateY(-2px)"} onMouseLeave={e => (e.target as HTMLElement).style.transform = "translateY(0)"} style={{ fontFamily: "Orbitron, sans-serif", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.15em", padding: "16px 44px", background: "#FF0080", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer", boxShadow: "0 0 24px rgba(255,0,128,0.7), 0 0 60px rgba(255,0,128,0.3)", transition: "transform 0.15s" }}>LAUNCH REVERSOR →</button>
       </section>
 

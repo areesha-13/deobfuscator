@@ -132,7 +132,7 @@ export default function Tool() {
             <h1 style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 900, fontSize: 'clamp(2rem, 5vw, 3.5rem)', color: '#FF0080', textShadow: '0 0 20px rgba(255,0,128,0.9), 0 0 60px rgba(255,0,128,0.4)', letterSpacing: '0.06em', margin: '0 0 12px' }}>
               REVERSOR
             </h1>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '1rem', color: 'rgba(255,255,255,0.5)', margin: 0 }}>
+            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '1rem', color: 'rgba(255,255,255,0.75)', margin: 0 }}>
               Upload a PE binary to begin analysis
             </p>
           </div>
@@ -227,7 +227,7 @@ export default function Tool() {
             <span style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 900, fontSize: '0.75rem', letterSpacing: '0.12em', color: riskColor(summary.risk_level), textShadow: `0 0 10px ${riskColor(summary.risk_level)}`, padding: '5px 12px', border: `1px solid ${riskColor(summary.risk_level)}`, borderRadius: 6 }}>
               {summary.risk_level} RISK
             </span>
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{result.filename}</span>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', color: 'rgba(255,255,255,0.88)', fontWeight: 500 }}>{result.filename}</span>
             <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.82rem', color: 'rgba(255,255,255,0.35)' }}>{(result.file_size_bytes / 1024).toFixed(1)} KB</span>
             <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.82rem', color: 'rgba(255,255,255,0.35)' }}>{summary.detected_count} technique{summary.detected_count !== 1 ? 's' : ''} detected</span>
           </div>
@@ -281,7 +281,7 @@ export default function Tool() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
               {meta.sections.map((s: any) => (
                 <div key={s.name} style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${s.entropy_flag ? 'rgba(255,0,128,0.3)' : 'rgba(255,255,255,0.07)'}`, borderRadius: 8, padding: '8px 12px' }}>
-                  <p style={{ fontFamily: "'Courier New', monospace", fontSize: '0.8rem', color: s.entropy_flag ? '#FF0080' : 'rgba(255,255,255,0.7)', margin: '0 0 2px' }}>{s.name || '(unnamed)'}</p>
+                  <p style={{ fontFamily: "'Courier New', monospace", fontSize: '0.8rem', color: s.entropy_flag ? '#FF0080' : 'rgba(255,255,255,0.88)', margin: '0 0 2px' }}>{s.name || '(unnamed)'}</p>
                   <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.72rem', color: 'rgba(255,255,255,0.35)', margin: 0 }}>Entropy: {s.entropy}{s.entropy_flag ? ' ⚠' : ''}</p>
                 </div>
               ))}
@@ -292,7 +292,7 @@ export default function Tool() {
         {/* Sample strings */}
         {meta.strings_sample?.length > 0 && (
           <Section title="Extracted Strings">
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'rgba(255,255,255,0.5)', margin: '0 0 16px' }}>
+            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'rgba(255,255,255,0.75)', margin: '0 0 16px' }}>
               {meta.total_strings_found} strings found. Showing first {Math.min(meta.strings_sample.length, 20)}.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -382,7 +382,7 @@ function DeobfuscationOutput({ name, deo }: { name: string; deo: any }) {
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Unpacking Result</p>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', color: deo.status === 'success' ? '#00CC66' : 'rgba(255,255,255,0.6)', margin: '0 0 8px' }}>{deo.message}</p>
         {deo.size_before_bytes && (
-          <p style={{ fontFamily: "'Courier New', monospace", fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)', margin: 0 }}>
+          <p style={{ fontFamily: "'Courier New', monospace", fontSize: '0.82rem', color: 'rgba(255,255,255,0.75)', margin: 0 }}>
             {deo.size_before_bytes} bytes → {deo.size_after_bytes} bytes ({deo.size_reduction_percent}% reduction)
           </p>
         )}
@@ -407,7 +407,7 @@ function DeobfuscationOutput({ name, deo }: { name: string; deo: any }) {
           <div style={{ marginBottom: 12 }}>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', margin: '0 0 6px' }}>Base64</p>
             {b64.slice(0, 5).map((e: any, i: number) => (
-              <p key={i} style={{ fontFamily: "'Courier New', monospace", fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', margin: '0 0 4px', padding: '4px 8px', background: 'rgba(255,255,255,0.04)', borderRadius: 4 }}>"{e.decoded}"</p>
+              <p key={i} style={{ fontFamily: "'Courier New', monospace", fontSize: '0.82rem', color: 'rgba(255,255,255,0.88)', margin: '0 0 4px', padding: '4px 8px', background: 'rgba(255,255,255,0.04)', borderRadius: 4 }}>"{e.decoded}"</p>
             ))}
           </div>
         )}
@@ -418,7 +418,7 @@ function DeobfuscationOutput({ name, deo }: { name: string; deo: any }) {
               <div key={i} style={{ marginBottom: 6 }}>
                 <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)', margin: '0 0 3px' }}>Key {entry.key}</p>
                 {entry.strings_found?.slice(0, 3).map((s: string, j: number) => (
-                  <p key={j} style={{ fontFamily: "'Courier New', monospace", fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', margin: '0 0 3px', padding: '4px 8px', background: 'rgba(255,255,255,0.04)', borderRadius: 4 }}>"{s}"</p>
+                  <p key={j} style={{ fontFamily: "'Courier New', monospace", fontSize: '0.82rem', color: 'rgba(255,255,255,0.88)', margin: '0 0 3px', padding: '4px 8px', background: 'rgba(255,255,255,0.04)', borderRadius: 4 }}>"{s}"</p>
                 ))}
               </div>
             ))}
@@ -428,7 +428,7 @@ function DeobfuscationOutput({ name, deo }: { name: string; deo: any }) {
           <div>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', margin: '0 0 6px' }}>ROT13</p>
             {rot.slice(0, 5).map((e: any, i: number) => (
-              <p key={i} style={{ fontFamily: "'Courier New', monospace", fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', margin: '0 0 4px', padding: '4px 8px', background: 'rgba(255,255,255,0.04)', borderRadius: 4 }}>"{e.original}" → "{e.decoded}"</p>
+              <p key={i} style={{ fontFamily: "'Courier New', monospace", fontSize: '0.82rem', color: 'rgba(255,255,255,0.88)', margin: '0 0 4px', padding: '4px 8px', background: 'rgba(255,255,255,0.04)', borderRadius: 4 }}>"{e.original}" → "{e.decoded}"</p>
             ))}
           </div>
         )}
@@ -459,7 +459,7 @@ function DeobfuscationOutput({ name, deo }: { name: string; deo: any }) {
   if (name === 'control_flow_obfuscation' || name === 'junk_code') {
     return (
       <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16 }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, margin: '0 0 12px' }}>{deo.message}</p>
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: '0 0 12px' }}>{deo.message}</p>
         {deo.manual_steps?.length > 0 && <StepList steps={deo.manual_steps} label="Manual Steps" />}
       </div>
     )
