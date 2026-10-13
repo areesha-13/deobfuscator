@@ -9,7 +9,7 @@ export default function Navbar() {
       position: 'fixed', top: 0, left: 0, right: 0, height: 60, zIndex: 100,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '0 48px',
-      background: 'rgba(0,0,0,0.55)',
+      background: 'rgba(255,255,255,0.04)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
       borderBottom: '1px solid rgba(255,255,255,0.07)',

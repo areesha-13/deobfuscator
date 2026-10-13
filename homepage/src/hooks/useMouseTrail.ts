@@ -32,9 +32,9 @@ export function useMouseTrail() {
       const alpha = 1 - d.age
       const radius = d.size * (1 - d.age * 0.5)
       const grad = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, radius * 3)
-      grad.addColorStop(0, `rgba(255,0,128,${alpha * 0.9})`)
-      grad.addColorStop(0.4, `rgba(255,0,128,${alpha * 0.4})`)
-      grad.addColorStop(1, `rgba(255,0,128,0)`)
+      grad.addColorStop(0, `rgba(255,0,137,${alpha * 0.9})`)
+      grad.addColorStop(0.4, `rgba(255,0,137,${alpha * 0.4})`)
+      grad.addColorStop(1, `rgba(255,0,137,0)`)
       ctx.beginPath()
       ctx.arc(d.x, d.y, radius * 3, 0, Math.PI * 2)
       ctx.fillStyle = grad

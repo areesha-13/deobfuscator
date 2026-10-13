@@ -153,19 +153,13 @@ export default function Landing() {
         <div style={{ position: "absolute", top: -100, left: "50%", transform: "translateX(-50%)", width: 700, height: 500, borderRadius: "50%", background: "radial-gradient(ellipse, rgba(255,0,128,0.2) 0%, transparent 70%)", filter: "blur(50px)", pointerEvents: "none", zIndex: 0 }} />
 
         <div style={{ position: "relative", zIndex: 3, maxWidth: 800, width: "100%" }}>
-          <div style={{ display: "inline-block", padding: "6px 16px", borderRadius: 100, border: "1px solid rgba(255,0,128,0.4)", background: "rgba(255,0,128,0.08)", marginBottom: 28, opacity: vis.title ? 1 : 0, transform: vis.title ? "translateY(0)" : "translateY(12px)", transition: "opacity 0.6s ease, transform 0.6s ease" }}>
-            <span style={{ fontFamily: "Inter, sans-serif", fontSize: "0.78rem", color: "#FF0080", letterSpacing: "0.06em" }}>Obfuscation Analysis Platform</span>
-          </div>
-
+          
           <h1 style={{ fontFamily: "Orbitron, sans-serif", fontWeight: 900, fontSize: "clamp(3.5rem, 9vw, 7rem)", color: "#FF0080", textShadow: "0 0 20px rgba(255,0,128,1), 0 0 60px rgba(255,0,128,0.6), 0 0 120px rgba(255,0,128,0.3)", letterSpacing: "0.06em", margin: "0 0 20px", lineHeight: 1, opacity: vis.title ? 1 : 0, transform: vis.title ? "translateY(0)" : "translateY(20px)", transition: "opacity 0.7s ease 0.1s, transform 0.7s ease 0.1s" }}>
             REVERSOR
           </h1>
 
           <p style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(1rem, 2.2vw, 1.3rem)", color: "rgba(255,255,255,0.9)", margin: "0 auto 12px", opacity: vis.sub ? 1 : 0, transform: vis.sub ? "translateY(0)" : "translateY(16px)", transition: "opacity 0.6s ease, transform 0.6s ease" }}>
-            Automated reverse engineering, built for everyone.
-          </p>
-          <p style={{ fontFamily: "Inter, sans-serif", fontSize: "1rem", color: "rgba(255,255,255,0.6)", maxWidth: 520, margin: "0 auto 40px", lineHeight: 1.7, opacity: vis.sub ? 1 : 0, transition: "opacity 0.6s ease 0.1s" }}>
-            Upload a PE binary. Get a plain-English breakdown of every obfuscation technique found — and what to do about it.
+            Automated Reverse Engineering, Built for Everyone.
           </p>
 
           <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap", opacity: vis.cta ? 1 : 0, transform: vis.cta ? "translateY(0)" : "translateY(16px)", transition: "opacity 0.6s ease, transform 0.6s ease" }}>
