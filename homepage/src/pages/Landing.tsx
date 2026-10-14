@@ -201,16 +201,13 @@ export default function Landing() {
       <div style={divider} />
 
       <section style={{ padding: "0 48px 80px", maxWidth: 1000, margin: "0 auto" }}>
-        <p style={{ fontFamily: "Orbitron, sans-serif", fontSize: "0.7rem", letterSpacing: "0.2em", color: "#FF0080", marginBottom: 16, textAlign: "center" }}>LIVE DEMO</p>
-        <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "clamp(1.6rem, 3vw, 2.2rem)", color: "#fff", margin: "0 0 12px", textAlign: "center" }}>Watch the pipeline run</h2>
-        <p style={{ fontFamily: "Inter, sans-serif", fontSize: "1rem", color: "rgba(255,255,255,0.85)", textAlign: "center", margin: "0 0 36px" }}>A simulated run on a packed, obfuscated sample — same pipeline as the real tool.</p>
+        <p style={{ fontFamily: "Orbitron, sans-serif", fontSize: "0.9rem", letterSpacing: "0.2em", color: "#FF0080", marginBottom: 16, textAlign: "center" }}>DEMONSTRATION</p>
         <LiveDemo />
       </section>
 
       <div style={divider} />
 
       <section style={{ padding: "0 48px 80px", maxWidth: 1100, margin: "0 auto" }}>
-        <p style={{ fontFamily: "Inter, sans-serif", fontSize: "1rem", color: "rgba(255,255,255,0.55)", textAlign: "center", margin: "0 0 36px" }}>A simulated run on a packed, obfuscated sample — same pipeline as the real tool.</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20 }}>
           {features.map(f => <FeatureCard key={f.title} {...f} />)}
         </div>
