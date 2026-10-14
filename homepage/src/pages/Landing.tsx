@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Particles from '../components/Particles'
@@ -53,66 +53,75 @@ const demoResults = [
 ]
 
 function LiveDemo() {
-  const [running, setRunning] = useState(false)
   const [visibleSteps, setVisibleSteps] = useState<number[]>([])
   const [showResults, setShowResults] = useState(false)
   const [animatedBars, setAnimatedBars] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  const hasRun = useRef(false)
 
-  function startDemo() {
-    if (running) return
-    setRunning(true); setVisibleSteps([]); setShowResults(false); setAnimatedBars(false)
-    demoSteps.forEach((step, i) => {
-      setTimeout(() => {
-        setVisibleSteps(prev => [...prev, i])
-        if (i === demoSteps.length - 1) {
-          setTimeout(() => { setShowResults(true); setTimeout(() => setAnimatedBars(true), 100); setRunning(false) }, 400)
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasRun.current) {
+          hasRun.current = true
+          demoSteps.forEach((step, i) => {
+            setTimeout(() => {
+              setVisibleSteps(prev => [...prev, i])
+              if (i === demoSteps.length - 1) {
+                setTimeout(() => {
+                  setShowResults(true)
+                  setTimeout(() => setAnimatedBars(true), 100)
+                }, 400)
+              }
+            }, step.delay)
+          })
         }
-      }, step.delay)
-    })
-  }
+      },
+      { threshold: 0.3 }
+    )
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
 
   return (
-    <div style={{ ...glass, padding: 0, overflow: "hidden", border: "1px solid rgba(255,0,128,0.2)" }}>
-      <div style={{ padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", gap: 8, background: "rgba(0,0,0,0.3)" }}>
-        <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#ff5f57" }} />
-        <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#febc2e" }} />
-        <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#28c840" }} />
-        <span style={{ fontFamily: "Courier New, monospace", fontSize: "0.75rem", color: "rgba(255,255,255,0.3)", marginLeft: 12 }}>reversor — analysis pipeline</span>
-        <button onClick={startDemo} disabled={running} style={{ marginLeft: "auto", fontFamily: "Orbitron, sans-serif", fontSize: "0.6rem", letterSpacing: "0.1em", padding: "5px 14px", background: running ? "rgba(255,0,128,0.2)" : "#FF0080", color: "#fff", border: "none", borderRadius: 6, cursor: running ? "not-allowed" : "pointer", boxShadow: running ? "none" : "0 0 12px rgba(255,0,128,0.5)", transition: "all 0.2s" }}>
-          {running ? "RUNNING..." : visibleSteps.length > 0 ? "RUN AGAIN" : "RUN DEMO"}
-        </button>
+    <div ref={ref} style={{ ...glass, padding: 0, overflow: 'hidden', border: '1px solid rgba(255,0,128,0.2)' }}>
+      <div style={{ padding: '12px 20px', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(0,0,0,0.3)' }}>
+        <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
+        <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#febc2e' }} />
+        <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
+        <span style={{ fontFamily: 'Roboto Mono, monospace', fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)', marginLeft: 12 }}>reversor — analysis pipeline</span>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: 280 }}>
-        <div style={{ padding: "20px 24px", borderRight: "1px solid rgba(255,255,255,0.06)", fontFamily: "Courier New, monospace", fontSize: "0.78rem", lineHeight: 2 }}>
-          {visibleSteps.length === 0 && !running && <p style={{ color: "rgba(255,255,255,0.25)", margin: 0 }}>Click RUN DEMO to watch the pipeline execute...</p>}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: 280 }}>
+        <div style={{ padding: '20px 24px', borderRight: '1px solid rgba(255,255,255,0.06)', fontFamily: 'Roboto Mono, monospace', fontSize: '0.78rem', lineHeight: 2 }}>
+          {visibleSteps.length === 0 && <p style={{ color: 'rgba(255,255,255,0.25)', margin: 0 }}>Initializing...</p>}
           {visibleSteps.map(i => (
-            <div key={i} style={{ display: "flex", gap: 10 }}>
-              <span style={{ color: "#FF0080" }}>{">"}</span>
-              <span style={{ color: i === demoSteps.length - 1 ? "#00CC66" : "rgba(255,255,255,0.8)" }}>{demoSteps[i].label}</span>
+            <div key={i} style={{ display: 'flex', gap: 10 }}>
+              <span style={{ color: '#FF0089' }}>{'>'}</span>
+              <span style={{ color: i === demoSteps.length - 1 ? '#00CC66' : 'rgba(255,255,255,0.85)' }}>{demoSteps[i].label}</span>
             </div>
           ))}
         </div>
-        <div style={{ padding: "20px 24px" }}>
+        <div style={{ padding: '20px 24px' }}>
           {!showResults ? (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-              <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.8rem", color: "rgba(255,255,255,0.2)", textAlign: "center" }}>Results will appear here</p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+              <p style={{ fontFamily: 'Roboto Mono, monospace', fontSize: '0.8rem', color: 'rgba(255,255,255,0.25)', textAlign: 'center' }}>Awaiting results...</p>
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <p style={{ fontFamily: "Orbitron, sans-serif", fontSize: "0.6rem", letterSpacing: "0.14em", color: "#FF0080", margin: "0 0 4px" }}>DETECTION RESULTS</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.6rem', letterSpacing: '0.14em', color: '#FF0089', margin: '0 0 4px' }}>DETECTION RESULTS</p>
               {demoResults.map((r, i) => (
                 <div key={r.technique}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                    <span style={{ fontFamily: "Inter, sans-serif", fontSize: "0.78rem", color: r.detected ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.35)", fontWeight: r.detected ? 600 : 400 }}>{r.technique}</span>
-                    <span style={{ fontFamily: "Orbitron, sans-serif", fontSize: "0.7rem", color: r.detected ? "#FF0080" : "rgba(255,255,255,0.25)" }}>{r.detected ? "✓" : "✗"} {r.confidence}%</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <span style={{ fontFamily: 'Roboto Mono, monospace', fontSize: '0.78rem', color: r.detected ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)', fontWeight: r.detected ? 600 : 400 }}>{r.technique}</span>
+                    <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.7rem', color: r.detected ? '#FF0089' : 'rgba(255,255,255,0.25)' }}>{r.detected ? '✓' : '✗'} {r.confidence}%</span>
                   </div>
-                  <div style={{ height: 3, background: "rgba(255,255,255,0.07)", borderRadius: 2 }}>
-                    <div style={{ height: "100%", borderRadius: 2, width: animatedBars ? r.confidence + "%" : "0%", background: r.detected ? "linear-gradient(90deg, #FF0080, #FF66B2)" : "rgba(255,255,255,0.15)", boxShadow: r.detected ? "0 0 8px rgba(255,0,128,0.6)" : "none", transition: "width 0.8s ease " + (i * 0.1) + "s" }} />
+                  <div style={{ height: 3, background: 'rgba(255,255,255,0.07)', borderRadius: 2 }}>
+                    <div style={{ height: '100%', borderRadius: 2, width: animatedBars ? r.confidence + '%' : '0%', background: r.detected ? 'linear-gradient(90deg, #FF0089, #FF66B2)' : 'rgba(255,255,255,0.15)', boxShadow: r.detected ? '0 0 8px rgba(255,0,137,0.6)' : 'none', transition: 'width 0.8s ease ' + (i * 0.1) + 's' }} />
                   </div>
                 </div>
               ))}
-              <div style={{ marginTop: 8, padding: "8px 12px", background: "rgba(255,0,128,0.08)", border: "1px solid rgba(255,0,128,0.2)", borderRadius: 8 }}>
-                <span style={{ fontFamily: "Orbitron, sans-serif", fontSize: "0.62rem", letterSpacing: "0.1em", color: "#FF6600" }}>HIGH RISK — 3 techniques detected</span>
+              <div style={{ marginTop: 8, padding: '8px 12px', background: 'rgba(255,0,137,0.08)', border: '1px solid rgba(255,0,137,0.2)', borderRadius: 8 }}>
+                <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.62rem', letterSpacing: '0.1em', color: '#FF6600' }}>HIGH RISK — 3 techniques detected</span>
               </div>
             </div>
           )}
@@ -126,7 +135,6 @@ function FeatureCard({ title, icon, description }: { title: string; icon: string
   const [hovered, setHovered] = useState(false)
   return (
     <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{ ...glass, padding: 28, cursor: "default", transform: hovered ? "translateY(-6px)" : "translateY(0)", borderColor: hovered ? "rgba(255,0,128,0.35)" : "rgba(255,255,255,0.1)", boxShadow: hovered ? "0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(255,0,128,0.12)" : "none", transition: "transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease" }}>
-      <span style={{ fontSize: "1.8rem", display: "block", marginBottom: 14 }}>{icon}</span>
       <h3 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1rem", color: hovered ? "#FF0080" : "#fff", margin: "0 0 10px", transition: "color 0.2s" }}>{title}</h3>
       <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.875rem", color: "rgba(255,255,255,0.85)", lineHeight: 1.7, margin: 0 }}>{description}</p>
     </div>
@@ -202,8 +210,7 @@ export default function Landing() {
       <div style={divider} />
 
       <section style={{ padding: "0 48px 80px", maxWidth: 1100, margin: "0 auto" }}>
-        <p style={{ fontFamily: "Orbitron, sans-serif", fontSize: "0.7rem", letterSpacing: "0.2em", color: "#FF0080", marginBottom: 16, textAlign: "center" }}>CAPABILITIES</p>
-        <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "clamp(1.6rem, 3vw, 2.2rem)", color: "#fff", margin: "0 0 48px", textAlign: "center" }}>What Reversor detects and reverses</h2>
+        <p style={{ fontFamily: "Inter, sans-serif", fontSize: "1rem", color: "rgba(255,255,255,0.55)", textAlign: "center", margin: "0 0 36px" }}>A simulated run on a packed, obfuscated sample — same pipeline as the real tool.</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20 }}>
           {features.map(f => <FeatureCard key={f.title} {...f} />)}
         </div>
@@ -211,22 +218,25 @@ export default function Landing() {
 
       <div style={divider} />
 
-      <section style={{ padding: "0 48px 80px", maxWidth: 900, margin: "0 auto" }}>
-        <p style={{ fontFamily: "Orbitron, sans-serif", fontSize: "0.7rem", letterSpacing: "0.2em", color: "#FF0080", marginBottom: 16, textAlign: "center" }}>HOW IT WORKS</p>
-        <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "clamp(1.6rem, 3vw, 2.2rem)", color: "#fff", margin: "0 0 48px", textAlign: "center" }}>Three steps from binary to report</h2>
-        {[
-          { n: "01", t: "Upload", d: "Submit a PE binary (.exe, .dll, .sys) directly through the browser. No installation required. No account needed." },
-          { n: "02", t: "Analyze", d: "Reversor extracts features, runs the detection pipeline, and attempts deobfuscation — packing, string encoding, control flow, anti-debugging — all in under ten seconds." },
-          { n: "03", t: "Report", d: "Receive a plain-English breakdown of every technique found, decoded strings, patch guidance, and a downloadable PDF report suitable for non-technical stakeholders." },
-        ].map((s, i, arr) => (
-          <div key={s.n} style={{ display: "flex", gap: 32, alignItems: "flex-start", padding: "28px 0", borderBottom: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
-            <span style={{ fontFamily: "Orbitron, sans-serif", fontWeight: 900, fontSize: "2.5rem", color: "rgba(255,0,128,0.25)", flexShrink: 0, lineHeight: 1 }}>{s.n}</span>
-            <div>
-              <h3 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1.1rem", color: "#fff", margin: "0 0 8px" }}>{s.t}</h3>
-              <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.95rem", color: "rgba(255,255,255,0.85)", lineHeight: 1.7, margin: 0 }}>{s.d}</p>
+      <section style={{ padding: '0 48px 80px', maxWidth: 900, margin: '0 auto' }}>
+        <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontWeight: 900, fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', color: '#FF0089', textShadow: '0 0 20px rgba(255,0,137,0.5)', margin: '0 0 56px', textAlign: 'center', letterSpacing: '0.06em' }}>HOW IT WORKS</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2, position: 'relative' }}>
+          {/* Connector line */}
+          <div style={{ position: 'absolute', top: 36, left: '16.6%', right: '16.6%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,0,137,0.5), rgba(255,0,137,0.5), transparent)', zIndex: 0 }} />
+          {[
+            { n: '01', t: 'Upload', d: 'Drop a PE binary into the browser. No installation. No account. Supports .exe, .dll, and .sys files up to 10MB.' },
+            { n: '02', t: 'Analyze', d: 'The pipeline runs entropy checks, import table inspection, string extraction, and ML classification — all in under ten seconds.' },
+            { n: '03', t: 'Report', d: 'Get a plain-English breakdown of every detected technique, decoded strings, patch guidance, and a downloadable PDF.' },
+          ].map((s, i) => (
+            <div key={s.n} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '0 24px', position: 'relative', zIndex: 1 }}>
+              <div style={{ width: 72, height: 72, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,0,137,0.1)', border: '1px solid rgba(255,0,137,0.4)', boxShadow: '0 0 24px rgba(255,0,137,0.2)', marginBottom: 24, flexShrink: 0 }}>
+                <span style={{ fontFamily: 'Orbitron, sans-serif', fontWeight: 900, fontSize: '1.1rem', color: '#FF0089' }}>{s.n}</span>
+              </div>
+              <h3 style={{ fontFamily: 'Orbitron, sans-serif', fontWeight: 700, fontSize: '0.85rem', color: '#fff', margin: '0 0 12px', letterSpacing: '0.1em' }}>{s.t.toUpperCase()}</h3>
+              <p style={{ fontFamily: 'Roboto Mono, monospace', fontSize: '0.82rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, margin: 0 }}>{s.d}</p>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </section>
 
       <div style={divider} />

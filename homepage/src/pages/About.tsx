@@ -40,8 +40,7 @@ export default function About() {
 
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '100px 24px 0' }}>
 
-        <div style={{ paddingTop: 40, marginBottom: 60 }}>
-          <p style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '0.7rem', letterSpacing: '0.2em', color: '#FF0080', marginBottom: 16 }}>ABOUT REVERSOR</p>
+        <div style={{ paddingTop: 40, marginBottom: 60, padding: '48px 40px', borderRadius: 20, background: 'radial-gradient(ellipse 100% 100% at 50% 0%, rgba(255,0,137,0.18) 0%, rgba(255,0,137,0.06) 50%, transparent 100%)', border: '1px solid rgba(255,0,137,0.12)' }}>
           <h1 style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', color: '#fff', margin: '0 0 20px', lineHeight: 1.25 }}>
             What is obfuscation,<br />and why does it matter?
           </h1>
@@ -53,7 +52,6 @@ export default function About() {
         <div style={divider} />
 
         <div style={{ marginBottom: 60 }}>
-          <p style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '0.7rem', letterSpacing: '0.2em', color: '#FF0080', marginBottom: 16 }}>THE CHALLENGE</p>
           <h2 style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: 'clamp(1.4rem, 3vw, 2rem)', color: '#fff', margin: '0 0 20px' }}>Why existing tools fall short</h2>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '1rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, margin: '0 0 16px' }}>
             The reverse engineering toolchain today is fragmented. Ghidra and IDA Pro are industry-standard disassemblers, but they require significant expertise and produce raw assembly output. FLOSS recovers obfuscated strings but only addresses one technique. Detect-It-Easy identifies packers but cannot reverse them. No single tool handles the full obfuscation identification and reversal pipeline.
@@ -66,7 +64,6 @@ export default function About() {
         <div style={divider} />
 
         <div style={{ marginBottom: 60 }}>
-          <p style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '0.7rem', letterSpacing: '0.2em', color: '#FF0080', marginBottom: 16 }}>TECHNIQUES COVERED</p>
           <h2 style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: 'clamp(1.4rem, 3vw, 2rem)', color: '#fff', margin: '0 0 32px' }}>Five categories of obfuscation</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {techniques.map(t => (
@@ -82,7 +79,6 @@ export default function About() {
         <div style={divider} />
 
         <div style={{ marginBottom: 60 }}>
-          <p style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '0.7rem', letterSpacing: '0.2em', color: '#FF0080', marginBottom: 16 }}>TECHNICAL APPROACH</p>
           <h2 style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: 'clamp(1.4rem, 3vw, 2rem)', color: '#fff', margin: '0 0 20px' }}>How Reversor works</h2>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '1rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, margin: '0 0 16px' }}>
             Reversor uses a static analysis pipeline built on PE file parsing, entropy analysis, import table inspection, and control flow heuristics. Features are extracted from the binary and passed through a multi-label classifier that produces a confidence score for each obfuscation category independently.
@@ -93,20 +89,6 @@ export default function About() {
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '1rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, margin: 0 }}>
             All analysis is static — the binary is never executed, making the tool safe to use with suspicious or malicious files.
           </p>
-        </div>
-
-        <div style={divider} />
-
-        {/* Try it CTA */}
-        <div style={{ ...glass, padding: '40px 36px', marginBottom: 60, textAlign: 'center' }}>
-          <h2 style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: '1.4rem', color: '#fff', margin: '0 0 12px' }}>Try it yourself</h2>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.95rem', color: 'rgba(255,255,255,0.6)', margin: '0 0 28px' }}>Upload a binary and see the full analysis pipeline in action.</p>
-          <button
-            onClick={() => navigate('/tool')}
-            style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 700, fontSize: '0.82rem', letterSpacing: '0.15em', padding: '13px 36px', background: '#FF0080', color: '#fff', border: 'none', borderRadius: 10, cursor: 'pointer', boxShadow: '0 0 20px rgba(255,0,128,0.6)' }}
-          >
-            LAUNCH REVERSOR →
-          </button>
         </div>
 
         <div style={divider} />

@@ -132,9 +132,6 @@ export default function Tool() {
             <h1 style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 900, fontSize: 'clamp(2rem, 5vw, 3.5rem)', color: '#FF0080', textShadow: '0 0 20px rgba(255,0,128,0.9), 0 0 60px rgba(255,0,128,0.4)', letterSpacing: '0.06em', margin: '0 0 12px' }}>
               REVERSOR
             </h1>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '1rem', color: 'rgba(255,255,255,0.75)', margin: 0 }}>
-              Upload a PE binary to begin analysis
-            </p>
           </div>
 
           {/* Drop zone */}
