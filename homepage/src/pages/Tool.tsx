@@ -53,9 +53,9 @@ export default function Tool() {
       const alpha = 1 - d.age
       const radius = d.size * (1 - d.age * 0.5)
       const grad = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, radius * 3)
-      grad.addColorStop(0, `rgba(255,0,128,${alpha * 0.9})`)
-      grad.addColorStop(0.4, `rgba(255,0,128,${alpha * 0.4})`)
-      grad.addColorStop(1, `rgba(255,0,128,0)`)
+      grad.addColorStop(0, `rgba(255,0,137,${alpha * 0.9})`)
+      grad.addColorStop(0.4, `rgba(255,0,137,${alpha * 0.4})`)
+      grad.addColorStop(1, `rgba(255,0,137,0)`)
       ctx.beginPath()
       ctx.arc(d.x, d.y, radius * 3, 0, Math.PI * 2)
       ctx.fillStyle = grad
@@ -129,7 +129,7 @@ export default function Tool() {
         <div style={{ position: 'relative', zIndex: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 32, width: '100%', maxWidth: 560, padding: '80px 24px 0' }}>
 
           <div style={{ textAlign: 'center' }}>
-            <h1 style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 900, fontSize: 'clamp(2rem, 5vw, 3.5rem)', color: '#FF0080', textShadow: '0 0 20px rgba(255,0,128,0.9), 0 0 60px rgba(255,0,128,0.4)', letterSpacing: '0.06em', margin: '0 0 12px' }}>
+            <h1 style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 900, fontSize: 'clamp(2rem, 5vw, 3.5rem)', color: '#FF0080', textShadow: '0 0 20px rgba(255,0,137,0.9), 0 0 60px rgba(255,0,137,0.4)', letterSpacing: '0.06em', margin: '0 0 12px' }}>
               REVERSOR
             </h1>
           </div>
@@ -145,8 +145,8 @@ export default function Tool() {
               alignItems: 'center',
               gap: 20,
               cursor: 'pointer',
-              borderColor: dragging ? 'rgba(255,0,128,0.6)' : 'rgba(255,255,255,0.1)',
-              boxShadow: dragging ? '0 0 40px rgba(255,0,128,0.2)' : 'none',
+              borderColor: dragging ? 'rgba(255,0,137,0.6)' : 'rgba(255,255,255,0.1)',
+              boxShadow: dragging ? '0 0 40px rgba(255,0,137,0.2)' : 'none',
               transition: 'border-color 0.2s, box-shadow 0.2s',
             }}
             onClick={() => inputRef.current?.click()}
@@ -154,7 +154,7 @@ export default function Tool() {
             onDragLeave={() => setDragging(false)}
             onDrop={onDrop}
           >
-            <div style={{ width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,0,128,0.1)', border: '1px solid rgba(255,0,128,0.35)', borderRadius: 12, boxShadow: '0 0 20px rgba(255,0,128,0.2)' }}>
+            <div style={{ width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,0,137,0.1)', border: '1px solid rgba(255,0,137,0.35)', borderRadius: 12, boxShadow: '0 0 20px rgba(255,0,137,0.2)' }}>
               <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
                 <path d="M13 17V5M13 5L8.5 9.5M13 5L17.5 9.5" stroke="#FF0080" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M4 19.5H22" stroke="#FF0080" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
@@ -192,7 +192,7 @@ export default function Tool() {
                 background: '#FF0080', color: '#fff', border: 'none', borderRadius: 10,
                 cursor: loading ? 'not-allowed' : 'pointer',
                 opacity: loading ? 0.6 : 1,
-                boxShadow: '0 0 20px rgba(255,0,128,0.6), 0 0 50px rgba(255,0,128,0.25)',
+                boxShadow: '0 0 20px rgba(255,0,137,0.6), 0 0 50px rgba(255,0,137,0.25)',
               }}
             >
               {loading ? 'ANALYZING...' : 'ANALYZE →'}
@@ -231,7 +231,7 @@ export default function Tool() {
           <div style={{ display: 'flex', gap: 12 }}>
             <button
               onClick={handleDownloadReport}
-              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: '0.82rem', padding: '8px 18px', background: '#FF0080', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', boxShadow: '0 0 14px rgba(255,0,128,0.5)' }}
+              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: '0.82rem', padding: '8px 18px', background: '#FF0080', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', boxShadow: '0 0 14px rgba(255,0,137,0.5)' }}
             >
               Download PDF
             </button>
@@ -248,7 +248,7 @@ export default function Tool() {
         {detectedTechniques.length > 0 && (
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 32 }}>
             {detectedTechniques.map(([name]: [string, any]) => (
-              <span key={name} style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', fontWeight: 600, padding: '4px 12px', background: 'rgba(255,0,128,0.12)', border: '1px solid rgba(255,0,128,0.35)', borderRadius: 100, color: '#FF0080' }}>
+              <span key={name} style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', fontWeight: 600, padding: '4px 12px', background: 'rgba(255,0,137,0.12)', border: '1px solid rgba(255,0,137,0.35)', borderRadius: 100, color: '#FF0080' }}>
                 {name.replace(/_/g, ' ')}
               </span>
             ))}
@@ -277,7 +277,7 @@ export default function Tool() {
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Sections</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
               {meta.sections.map((s: any) => (
-                <div key={s.name} style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${s.entropy_flag ? 'rgba(255,0,128,0.3)' : 'rgba(255,255,255,0.07)'}`, borderRadius: 8, padding: '8px 12px' }}>
+                <div key={s.name} style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${s.entropy_flag ? 'rgba(255,0,137,0.3)' : 'rgba(255,255,255,0.07)'}`, borderRadius: 8, padding: '8px 12px' }}>
                   <p style={{ fontFamily: "'Courier New', monospace", fontSize: '0.8rem', color: s.entropy_flag ? '#FF0080' : 'rgba(255,255,255,0.88)', margin: '0 0 2px' }}>{s.name || '(unnamed)'}</p>
                   <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.72rem', color: 'rgba(255,255,255,0.35)', margin: 0 }}>Entropy: {s.entropy}{s.entropy_flag ? ' ⚠' : ''}</p>
                 </div>
@@ -344,7 +344,7 @@ function TechniqueSection({ name, data, deobfuscation }: { name: string; data: a
       background: 'rgba(255,255,255,0.04)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255,0,128,0.15)',
+      border: '1px solid rgba(255,0,137,0.15)',
       borderRadius: 14,
       padding: '24px 28px',
       marginBottom: 16,
@@ -355,7 +355,7 @@ function TechniqueSection({ name, data, deobfuscation }: { name: string; data: a
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)' }}>Confidence</span>
           <div style={{ width: 100, height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 2 }}>
-            <div style={{ height: '100%', width: `${data.confidence * 100}%`, background: 'linear-gradient(90deg, #FF0080, #FF66B2)', borderRadius: 2, boxShadow: '0 0 8px rgba(255,0,128,0.6)' }} />
+            <div style={{ height: '100%', width: `${data.confidence * 100}%`, background: 'linear-gradient(90deg, #FF0080, #FF66B2)', borderRadius: 2, boxShadow: '0 0 8px rgba(255,0,137,0.6)' }} />
           </div>
           <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '0.75rem', color: '#FF0080' }}>{(data.confidence * 100).toFixed(0)}%</span>
         </div>
@@ -441,7 +441,7 @@ function DeobfuscationOutput({ name, deo }: { name: string; deo: any }) {
           <>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>Identified Anti-Debug APIs</p>
             {deo.identified_apis.map((api: any, i: number) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 10px', background: 'rgba(255,0,128,0.06)', border: '1px solid rgba(255,0,128,0.15)', borderRadius: 6, marginBottom: 6 }}>
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 10px', background: 'rgba(255,0,137,0.06)', border: '1px solid rgba(255,0,137,0.15)', borderRadius: 6, marginBottom: 6 }}>
                 <span style={{ fontFamily: "'Courier New', monospace", fontSize: '0.82rem', color: '#FF0080' }}>{api.api}</span>
                 <span style={{ fontFamily: "'Courier New', monospace", fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)' }}>{api.dll} @ {api.address}</span>
               </div>

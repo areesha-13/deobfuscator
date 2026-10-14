@@ -240,7 +240,7 @@ export default function Landing() {
 
       <section style={{ padding: "0 48px 120px", textAlign: "center" }}>
         <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "clamp(1.6rem, 3vw, 2.2rem)", color: "#fff", margin: "0 0 16px" }}>Ready to analyze a binary?</h2>
-        <p style={{ fontFamily: "Inter, sans-serif", fontSize: "1rem", color: "rgba(255,255,255,0.85)", margin: "0 0 40px" }}>No account required. Upload directly and get results in seconds.</p>
+        <p style={{ fontFamily: "Inter, sans-serif", fontSize: "1rem", color: "rgba(255,255,255,0.85)", margin: "0 0 40px" }}>Upload directly and get Results in seconds.</p>
         <button onClick={() => navigate("/tool")} onMouseEnter={e => (e.target as HTMLElement).style.transform = "translateY(-2px)"} onMouseLeave={e => (e.target as HTMLElement).style.transform = "translateY(0)"} style={{ fontFamily: "Orbitron, sans-serif", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.15em", padding: "16px 44px", background: "#FF0080", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer", boxShadow: "0 0 24px rgba(255,0,128,0.7), 0 0 60px rgba(255,0,128,0.3)", transition: "transform 0.15s" }}>LAUNCH REVERSOR →</button>
       </section>
 
