@@ -1,107 +1,68 @@
-import { useRef, useState, useEffect, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 import Navbar from '../components/Navbar'
+import Particles from '../components/Particles'
 
+// Local dev uses localhost. For production, set VITE_API_URL in Vercel to your backend URL.
+const API = ((import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:8000').replace(/\/$/, '')
 const ACCEPTED = '.exe,.dll,.sys'
 
-interface TrailDot { x: number; y: number; age: number; size: number }
-
-const bg: React.CSSProperties = {
-  background: 'linear-gradient(135deg, #000 0%, #1a0010 35%, #3d0025 60%, #000 100%)',
-  minHeight: '100vh',
-  color: '#fff',
-}
-
-const glass: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.05)',
-  backdropFilter: 'blur(24px) saturate(1.4)',
-  WebkitBackdropFilter: 'blur(24px) saturate(1.4)',
-  border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: 16,
-}
-
 const riskColor = (level: string) => {
-  if (level === 'CRITICAL') return '#FF0000'
-  if (level === 'HIGH') return '#FF6600'
-  if (level === 'MEDIUM') return '#FFAA00'
+  if (level === 'CRITICAL') return '#FF2D55'
+  if (level === 'HIGH') return '#FF7A2F'
+  if (level === 'MEDIUM') return '#FFC233'
   return '#00CC66'
 }
 
 export default function Tool() {
-  const navigate = useNavigate()
   const inputRef = useRef<HTMLInputElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const dotsRef = useRef<TrailDot[]>([])
-  const mouseRef = useRef({ x: -999, y: -999 })
-  const rafRef = useRef<number>(0)
-
   const [file, setFile] = useState<File | null>(null)
   const [dragging, setDragging] = useState(false)
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
 
-  const draw = useCallback(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    dotsRef.current.push({ x: mouseRef.current.x, y: mouseRef.current.y, age: 0, size: 10 + Math.random() * 6 })
-    dotsRef.current = dotsRef.current.map(d => ({ ...d, age: d.age + 0.025 })).filter(d => d.age < 1)
-    for (const d of dotsRef.current) {
-      const alpha = 1 - d.age
-      const radius = d.size * (1 - d.age * 0.5)
-      const grad = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, radius * 3)
-      grad.addColorStop(0, `rgba(255,0,137,${alpha * 0.9})`)
-      grad.addColorStop(0.4, `rgba(255,0,137,${alpha * 0.4})`)
-      grad.addColorStop(1, `rgba(255,0,137,0)`)
-      ctx.beginPath()
-      ctx.arc(d.x, d.y, radius * 3, 0, Math.PI * 2)
-      ctx.fillStyle = grad
-      ctx.fill()
-    }
-    rafRef.current = requestAnimationFrame(draw)
-  }, [])
-
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight }
-    resize()
-    window.addEventListener('resize', resize)
-    const onMove = (e: MouseEvent) => { mouseRef.current = { x: e.clientX, y: e.clientY } }
-    window.addEventListener('mousemove', onMove)
-    rafRef.current = requestAnimationFrame(draw)
-    return () => {
-      window.removeEventListener('resize', resize)
-      window.removeEventListener('mousemove', onMove)
-      cancelAnimationFrame(rafRef.current)
-    }
-  }, [draw])
-
-  function handleFile(f: File) { setFile(f); setResult(null); setError(null) }
-  function onInputChange(e: React.ChangeEvent<HTMLInputElement>) { const f = e.target.files?.[0]; if (f) handleFile(f) }
-  function onDrop(e: React.DragEvent) { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files?.[0]; if (f) handleFile(f) }
+  function handleFile(f: File) {
+    setFile(f)
+    setResult(null)
+    setError(null)
+  }
+  function onInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0]
+    if (f) handleFile(f)
+  }
+  function onDrop(e: React.DragEvent) {
+    e.preventDefault()
+    setDragging(false)
+    const f = e.dataTransfer.files?.[0]
+    if (f) handleFile(f)
+  }
 
   async function handleAnalyze() {
     if (!file) return
-    setLoading(true); setError(null); setResult(null)
+    setLoading(true)
+    setError(null)
+    setResult(null)
     try {
       const formData = new FormData()
       formData.append('file', file)
-      const response = await fetch('https://deobfuscator-production-e01c.up.railway.app/analyze', { method: 'POST', body: formData })
-      if (!response.ok) { const err = await response.json(); throw new Error(err.detail || 'Analysis failed') }
+      const response = await fetch(`${API}/analyze`, { method: 'POST', body: formData })
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}))
+        throw new Error(err.detail || 'Analysis failed')
+      }
       setResult(await response.json())
     } catch (err: any) {
-      setError(err.message || 'Could not connect to backend. Make sure it is running.')
-    } finally { setLoading(false) }
+      setError(err.message === 'Failed to fetch' ? 'Could not reach the analysis server. Make sure the backend is running.' : err.message || 'Something went wrong.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function handleDownloadReport() {
     if (!result) return
     try {
-      const response = await fetch('https://deobfuscator-production-e01c.up.railway.app/report', {
+      const response = await fetch(`${API}/report`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(result),
@@ -119,254 +80,183 @@ export default function Tool() {
     }
   }
 
-  // ── Upload screen ──────────────────────────────────────────────────────────
+  /* ---------------- UPLOAD SCREEN ---------------- */
   if (!result) {
     return (
-      <div style={{ ...bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-        <canvas ref={canvasRef} style={{ position: 'fixed', inset: 0, pointerEvents: 'none', mixBlendMode: 'screen', zIndex: 5 }} />
+      <div className="rv-page">
+        <Particles />
         <Navbar />
+        <main className="rv-main rv-tool">
+          <div className="rv-tool-inner">
+            <h1 className="rv-title rv-title-md">REVERSOR</h1>
 
-        <div style={{ position: 'relative', zIndex: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 32, width: '100%', maxWidth: 560, padding: '80px 24px 0' }}>
-
-          <div style={{ textAlign: 'center' }}>
-            <h1 style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 900, fontSize: 'clamp(2rem, 5vw, 3.5rem)', color: '#FF0080', textShadow: '0 0 20px rgba(255,0,137,0.9), 0 0 60px rgba(255,0,137,0.4)', letterSpacing: '0.06em', margin: '0 0 12px' }}>
-              REVERSOR
-            </h1>
-          </div>
-
-          {/* Drop zone */}
-          <div
-            style={{
-              ...glass,
-              width: '100%',
-              padding: '40px 32px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 20,
-              cursor: 'pointer',
-              borderColor: dragging ? 'rgba(255,0,137,0.6)' : 'rgba(255,255,255,0.1)',
-              boxShadow: dragging ? '0 0 40px rgba(255,0,137,0.2)' : 'none',
-              transition: 'border-color 0.2s, box-shadow 0.2s',
-            }}
-            onClick={() => inputRef.current?.click()}
-            onDragOver={e => { e.preventDefault(); setDragging(true) }}
-            onDragLeave={() => setDragging(false)}
-            onDrop={onDrop}
-          >
-            <div style={{ width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,0,137,0.1)', border: '1px solid rgba(255,0,137,0.35)', borderRadius: 12, boxShadow: '0 0 20px rgba(255,0,137,0.2)' }}>
-              <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-                <path d="M13 17V5M13 5L8.5 9.5M13 5L17.5 9.5" stroke="#FF0080" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M4 19.5H22" stroke="#FF0080" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
-              </svg>
-            </div>
-
-            {file ? (
-              <div style={{ textAlign: 'center' }}>
-                <p style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 700, color: '#FF0080', fontSize: '0.95rem', letterSpacing: '0.04em', margin: '0 0 6px' }}>{file.name}</p>
-                <p style={{ fontFamily: "'Inter', sans-serif", color: 'rgba(255,255,255,0.35)', fontSize: '0.8rem', margin: 0 }}>{(file.size / 1024).toFixed(1)} KB · click to change</p>
-              </div>
-            ) : (
-              <div style={{ textAlign: 'center' }}>
-                <p style={{ fontFamily: "'Inter', sans-serif", color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem', margin: '0 0 6px' }}>Drop a file or click to browse</p>
-                <p style={{ fontFamily: "'Inter', sans-serif", color: 'rgba(255,255,255,0.3)', fontSize: '0.78rem', margin: 0 }}>.EXE · .DLL · .SYS</p>
-              </div>
-            )}
-
-            <input ref={inputRef} type="file" accept={ACCEPTED} style={{ display: 'none' }} onChange={onInputChange} />
-          </div>
-
-          {error && (
-            <div style={{ ...glass, width: '100%', padding: '14px 20px', borderColor: 'rgba(255,0,0,0.3)', color: '#FF5555', fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', textAlign: 'center' }}>
-              {error}
-            </div>
-          )}
-
-          {file && (
-            <button
-              onClick={handleAnalyze}
-              disabled={loading}
-              style={{
-                fontFamily: "'Orbitron', sans-serif", fontWeight: 700, fontSize: '0.82rem',
-                letterSpacing: '0.18em', padding: '14px 40px',
-                background: '#FF0080', color: '#fff', border: 'none', borderRadius: 10,
-                cursor: loading ? 'not-allowed' : 'pointer',
-                opacity: loading ? 0.6 : 1,
-                boxShadow: '0 0 20px rgba(255,0,137,0.6), 0 0 50px rgba(255,0,137,0.25)',
-              }}
+            <div
+              className={'rv-upload lg' + (dragging ? ' drag' : '')}
+              onClick={() => inputRef.current?.click()}
+              onDragOver={e => { e.preventDefault(); setDragging(true) }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={onDrop}
             >
-              {loading ? 'ANALYZING...' : 'ANALYZE →'}
-            </button>
-          )}
-        </div>
+              <div className="rv-upload-icon">
+                <svg width="28" height="28" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+                  <path d="M13 17V5M13 5L8.5 9.5M13 5L17.5 9.5" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M4 19.5H22" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" opacity="0.6" />
+                </svg>
+              </div>
+              {file ? (
+                <div>
+                  <p className="rv-file-name">{file.name}</p>
+                  <p className="rv-muted">{(file.size / 1024).toFixed(1)} KB · Click to Change</p>
+                </div>
+              ) : (
+                <div>
+                  <p className="rv-upload-main">Drop a File or Click to Browse</p>
+                  <p className="rv-muted">.EXE · .DLL · .SYS</p>
+                </div>
+              )}
+            </div>
+            <input ref={inputRef} type="file" accept={ACCEPTED} style={{ display: 'none' }} onChange={onInputChange} />
+
+            {error && <div className="rv-error">{error}</div>}
+
+            {file && (
+              <button className="rv-btn" onClick={handleAnalyze} disabled={loading}>
+                {loading ? 'Analyzing...' : 'Analyze →'}
+              </button>
+            )}
+          </div>
+        </main>
       </div>
     )
   }
 
-  // ── Results screen ─────────────────────────────────────────────────────────
+  /* ---------------- RESULTS SCREEN ---------------- */
   const summary = result.analysis.summary
   const detections = result.analysis.detections
   const meta = result.analysis.metadata
   const deobfuscation = result.deobfuscation
-
-  const detectedTechniques = Object.entries(detections).filter(([, d]: [string, any]) => d.detected)
+  const detected = Object.entries(detections).filter(([, d]: [string, any]) => d.detected)
+  const rc = riskColor(summary.risk_level)
 
   return (
-    <div style={{ ...bg, paddingBottom: 80 }}>
-      <canvas ref={canvasRef} style={{ position: 'fixed', inset: 0, pointerEvents: 'none', mixBlendMode: 'screen', zIndex: 5 }} />
+    <div className="rv-page">
+      <Particles />
       <Navbar />
-
-      <div style={{ maxWidth: 860, margin: '0 auto', padding: '100px 24px 0', position: 'relative', zIndex: 10 }}>
-
-        {/* Top summary bar */}
-        <div style={{ ...glass, padding: '20px 28px', marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
-            <span style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 900, fontSize: '0.75rem', letterSpacing: '0.12em', color: riskColor(summary.risk_level), textShadow: `0 0 10px ${riskColor(summary.risk_level)}`, padding: '5px 12px', border: `1px solid ${riskColor(summary.risk_level)}`, borderRadius: 6 }}>
-              {summary.risk_level} RISK
+      <main className="rv-main rv-results">
+        <div className="rv-summary lg">
+          <div className="rv-summary-left">
+            <span className="rv-risk" style={{ color: rc, borderColor: rc, textShadow: `0 0 12px ${rc}` }}>
+              {summary.risk_level} Risk
             </span>
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', color: 'rgba(255,255,255,0.88)', fontWeight: 500 }}>{result.filename}</span>
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.82rem', color: 'rgba(255,255,255,0.35)' }}>{(result.file_size_bytes / 1024).toFixed(1)} KB</span>
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.82rem', color: 'rgba(255,255,255,0.35)' }}>{summary.detected_count} technique{summary.detected_count !== 1 ? 's' : ''} detected</span>
+            <span className="rv-summary-file">{result.filename}</span>
+            <span className="rv-muted">{(result.file_size_bytes / 1024).toFixed(1)} KB</span>
+            <span className="rv-muted">
+              {summary.detected_count} technique{summary.detected_count !== 1 ? 's' : ''} detected
+            </span>
           </div>
-          <div style={{ display: 'flex', gap: 12 }}>
-            <button
-              onClick={handleDownloadReport}
-              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: '0.82rem', padding: '8px 18px', background: '#FF0080', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', boxShadow: '0 0 14px rgba(255,0,137,0.5)' }}
-            >
-              Download PDF
-            </button>
-            <button
-              onClick={() => { setResult(null); setFile(null) }}
-              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: '0.82rem', padding: '8px 16px', background: 'transparent', color: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, cursor: 'pointer' }}
-            >
+          <div className="rv-summary-actions">
+            <button className="rv-btn rv-btn-sm" onClick={handleDownloadReport}>Download PDF</button>
+            <button className="rv-btn rv-btn-sm rv-btn-ghost" onClick={() => { setResult(null); setFile(null); setError(null) }}>
               New File
             </button>
           </div>
         </div>
 
-        {/* Technique pills */}
-        {detectedTechniques.length > 0 && (
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 32 }}>
-            {detectedTechniques.map(([name]: [string, any]) => (
-              <span key={name} style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', fontWeight: 600, padding: '4px 12px', background: 'rgba(255,0,137,0.12)', border: '1px solid rgba(255,0,137,0.35)', borderRadius: 100, color: '#FF0080' }}>
-                {name.replace(/_/g, ' ')}
-              </span>
+        {detected.length > 0 && (
+          <div className="rv-pills">
+            {detected.map(([name]) => (
+              <span key={name} className="rv-pill">{name.replace(/_/g, ' ')}</span>
             ))}
           </div>
         )}
 
-        {/* Per-technique sections */}
-        {detectedTechniques.length === 0 && (
-          <div style={{ ...glass, padding: 32, marginBottom: 24, textAlign: 'center' }}>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '1rem', color: 'rgba(255,255,255,0.6)', margin: 0 }}>No obfuscation techniques detected. This binary appears clean.</p>
+        {detected.length === 0 && (
+          <div className="rv-card rv-card-clean lg">
+            <p className="rv-p">No obfuscation techniques detected. This binary appears clean.</p>
           </div>
         )}
 
-        {detectedTechniques.map(([name, data]: [string, any]) => (
-          <TechniqueSection key={name} name={name} data={data} deobfuscation={deobfuscation} />
+        {detected.map(([name, data]: [string, any]) => (
+          <TechniqueCard key={name} name={name} data={data} deo={deobfuscation?.[name]} />
         ))}
 
-        {/* Binary metadata */}
-        <Section title="Binary Metadata">
+        <Block title="Binary Metadata">
           <MetaRow label="Sections" value={`${meta.sections.length} sections`} />
           <MetaRow label="Imports" value={`${meta.import_count} functions from ${meta.dll_count} DLL(s)`} />
-          {meta.packer_signatures?.length > 0 && <MetaRow label="Packer signatures" value={meta.packer_signatures.join(', ')} highlight />}
-          {meta.anti_debug_imports?.length > 0 && <MetaRow label="Anti-debug APIs" value={meta.anti_debug_imports.join(', ')} highlight />}
+          {meta.packer_signatures?.length > 0 && <MetaRow label="Packer Signatures" value={meta.packer_signatures.join(', ')} hl />}
+          {meta.anti_debug_imports?.length > 0 && <MetaRow label="Anti-Debug APIs" value={meta.anti_debug_imports.join(', ')} hl />}
           {meta.suspicious_imports?.length > 0 && <MetaRow label="Suspicious APIs" value={meta.suspicious_imports.join(', ')} />}
-          <div style={{ marginTop: 16 }}>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Sections</p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
-              {meta.sections.map((s: any) => (
-                <div key={s.name} style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${s.entropy_flag ? 'rgba(255,0,137,0.3)' : 'rgba(255,255,255,0.07)'}`, borderRadius: 8, padding: '8px 12px' }}>
-                  <p style={{ fontFamily: "'Courier New', monospace", fontSize: '0.8rem', color: s.entropy_flag ? '#FF0080' : 'rgba(255,255,255,0.88)', margin: '0 0 2px' }}>{s.name || '(unnamed)'}</p>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.72rem', color: 'rgba(255,255,255,0.35)', margin: 0 }}>Entropy: {s.entropy}{s.entropy_flag ? ' ⚠' : ''}</p>
-                </div>
-              ))}
-            </div>
+          <div className="rv-sections">
+            {meta.sections.map((s: any, i: number) => (
+              <div key={s.name + i} className={'rv-sec' + (s.entropy_flag ? ' flag' : '')}>
+                <p className="n">{s.name || '(unnamed)'}</p>
+                <p className="e">Entropy {s.entropy}{s.entropy_flag ? ' · High' : ''}</p>
+              </div>
+            ))}
           </div>
-        </Section>
+        </Block>
 
-        {/* Sample strings */}
         {meta.strings_sample?.length > 0 && (
-          <Section title="Extracted Strings">
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'rgba(255,255,255,0.75)', margin: '0 0 16px' }}>
-              {meta.total_strings_found} strings found. Showing first {Math.min(meta.strings_sample.length, 20)}.
+          <Block title="Extracted Strings">
+            <p className="rv-muted" style={{ marginBottom: 14 }}>
+              {meta.total_strings_found} strings found. Showing the first {Math.min(meta.strings_sample.length, 20)}.
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {meta.strings_sample.slice(0, 20).map((s: string, i: number) => (
-                <p key={i} style={{ fontFamily: "'Courier New', monospace", fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', margin: 0, padding: '3px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  {s}
-                </p>
-              ))}
-            </div>
-          </Section>
+            {meta.strings_sample.slice(0, 20).map((s: string, i: number) => (
+              <p key={i} className="rv-string">{s}</p>
+            ))}
+          </Block>
         )}
-
-      </div>
+      </main>
     </div>
   )
 }
 
-// ── Sub-components ─────────────────────────────────────────────────────────────
+/* ---------------- Sub-components ---------------- */
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Block({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div style={{
-      background: 'rgba(255,255,255,0.04)',
-      backdropFilter: 'blur(20px)',
-      WebkitBackdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255,255,255,0.09)',
-      borderRadius: 14,
-      padding: '24px 28px',
-      marginBottom: 16,
-    }}>
-      <p style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '0.65rem', letterSpacing: '0.16em', color: '#FF0080', margin: '0 0 18px', textTransform: 'uppercase' }}>{title}</p>
+    <div className="rv-card lg">
+      <p className="rv-label">{title}</p>
       {children}
     </div>
   )
 }
 
-function MetaRow({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+function MetaRow({ label, value, hl }: { label: string; value: string; hl?: boolean }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', gap: 16 }}>
-      <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)', flexShrink: 0 }}>{label}</span>
-      <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.85rem', color: highlight ? '#FF0080' : 'rgba(255,255,255,0.8)', textAlign: 'right', wordBreak: 'break-word' }}>{value}</span>
+    <div className={'rv-meta-row' + (hl ? ' hl' : '')}>
+      <span>{label}</span>
+      <span>{value}</span>
     </div>
   )
 }
 
-function TechniqueSection({ name, data, deobfuscation }: { name: string; data: any; deobfuscation: any }) {
-  const label = name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-  const deo = deobfuscation?.[name]
-
+function StepList({ steps, label }: { steps: string[]; label?: string }) {
   return (
-    <div style={{
-      background: 'rgba(255,255,255,0.04)',
-      backdropFilter: 'blur(20px)',
-      WebkitBackdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255,0,137,0.15)',
-      borderRadius: 14,
-      padding: '24px 28px',
-      marginBottom: 16,
-    }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
-        <p style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '0.7rem', letterSpacing: '0.16em', color: '#FF0080', margin: 0 }}>{label.toUpperCase()}</p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)' }}>Confidence</span>
-          <div style={{ width: 100, height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 2 }}>
-            <div style={{ height: '100%', width: `${data.confidence * 100}%`, background: 'linear-gradient(90deg, #FF0080, #FF66B2)', borderRadius: 2, boxShadow: '0 0 8px rgba(255,0,137,0.6)' }} />
-          </div>
-          <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '0.75rem', color: '#FF0080' }}>{(data.confidence * 100).toFixed(0)}%</span>
+    <div style={{ marginTop: 14 }}>
+      {label && <p className="rv-sub">{label}</p>}
+      {steps.map((s, i) => (
+        <div key={i} className="rv-step-row">
+          <b>{String(i + 1).padStart(2, '0')}</b>
+          <span>{s}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function TechniqueCard({ name, data, deo }: { name: string; data: any; deo: any }) {
+  return (
+    <div className="rv-card lg">
+      <div className="rv-tech-head">
+        <h3 className="rv-tech-title">{name.replace(/_/g, ' ')}</h3>
+        <div className="rv-conf">
+          <span className="rv-muted">Confidence</span>
+          <div className="rv-bar"><i className="on" style={{ width: `${data.confidence * 100}%` }} /></div>
+          <b>{(data.confidence * 100).toFixed(0)}%</b>
         </div>
       </div>
-
-      {/* Plain English explanation */}
-      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.95rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, margin: '0 0 16px' }}>
-        {data.explanation}
-      </p>
-
-      {/* Deobfuscation output */}
+      <p className="rv-p">{data.explanation}</p>
       {deo && <DeobfuscationOutput name={name} deo={deo} />}
     </div>
   )
@@ -375,15 +265,15 @@ function TechniqueSection({ name, data, deobfuscation }: { name: string; data: a
 function DeobfuscationOutput({ name, deo }: { name: string; deo: any }) {
   if (name === 'packing') {
     return (
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16 }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Unpacking Result</p>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', color: deo.status === 'success' ? '#00CC66' : 'rgba(255,255,255,0.6)', margin: '0 0 8px' }}>{deo.message}</p>
+      <div className="rv-out">
+        <p className="rv-sub">Unpacking Result</p>
+        <p className={deo.status === 'success' ? 'rv-out-ok' : 'rv-out-text'}>{deo.message}</p>
         {deo.size_before_bytes && (
-          <p style={{ fontFamily: "'Courier New', monospace", fontSize: '0.82rem', color: 'rgba(255,255,255,0.75)', margin: 0 }}>
+          <code className="rv-code">
             {deo.size_before_bytes} bytes → {deo.size_after_bytes} bytes ({deo.size_reduction_percent}% reduction)
-          </p>
+          </code>
         )}
-        {deo.manual_steps && <StepList steps={deo.manual_steps} />}
+        {deo.manual_steps && <StepList steps={deo.manual_steps} label="Manual Steps" />}
       </div>
     )
   }
@@ -394,56 +284,47 @@ function DeobfuscationOutput({ name, deo }: { name: string; deo: any }) {
     const xor = methods.xor_brute_force?.decoded_strings || []
     const rot = methods.rot13_decoded?.decoded_strings || []
     const total = deo.total_decoded_strings || 0
-
     return (
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16 }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 12px' }}>
-          Decoded Output — {total} string{total !== 1 ? 's' : ''} recovered
-        </p>
+      <div className="rv-out">
+        <p className="rv-sub">Decoded Output · {total} string{total !== 1 ? 's' : ''} recovered</p>
         {b64.length > 0 && (
-          <div style={{ marginBottom: 12 }}>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', margin: '0 0 6px' }}>Base64</p>
-            {b64.slice(0, 5).map((e: any, i: number) => (
-              <p key={i} style={{ fontFamily: "'Courier New', monospace", fontSize: '0.82rem', color: 'rgba(255,255,255,0.88)', margin: '0 0 4px', padding: '4px 8px', background: 'rgba(255,255,255,0.04)', borderRadius: 4 }}>"{e.decoded}"</p>
-            ))}
+          <div style={{ marginBottom: 14 }}>
+            <p className="rv-sub">Base64</p>
+            {b64.slice(0, 5).map((e: any, i: number) => <code key={i} className="rv-code">"{e.decoded}"</code>)}
           </div>
         )}
         {xor.length > 0 && (
-          <div style={{ marginBottom: 12 }}>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', margin: '0 0 6px' }}>XOR Brute Force — {methods.xor_brute_force?.keys_with_results} key(s) produced results</p>
+          <div style={{ marginBottom: 14 }}>
+            <p className="rv-sub">XOR Brute Force · {methods.xor_brute_force?.keys_with_results} key(s) produced results</p>
             {xor.slice(0, 3).map((entry: any, i: number) => (
-              <div key={i} style={{ marginBottom: 6 }}>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)', margin: '0 0 3px' }}>Key {entry.key}</p>
-                {entry.strings_found?.slice(0, 3).map((s: string, j: number) => (
-                  <p key={j} style={{ fontFamily: "'Courier New', monospace", fontSize: '0.82rem', color: 'rgba(255,255,255,0.88)', margin: '0 0 3px', padding: '4px 8px', background: 'rgba(255,255,255,0.04)', borderRadius: 4 }}>"{s}"</p>
-                ))}
+              <div key={i}>
+                <p className="rv-muted" style={{ margin: '6px 0 4px' }}>Key {entry.key}</p>
+                {entry.strings_found?.slice(0, 3).map((s: string, j: number) => <code key={j} className="rv-code">"{s}"</code>)}
               </div>
             ))}
           </div>
         )}
         {rot.length > 0 && (
           <div>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', margin: '0 0 6px' }}>ROT13</p>
-            {rot.slice(0, 5).map((e: any, i: number) => (
-              <p key={i} style={{ fontFamily: "'Courier New', monospace", fontSize: '0.82rem', color: 'rgba(255,255,255,0.88)', margin: '0 0 4px', padding: '4px 8px', background: 'rgba(255,255,255,0.04)', borderRadius: 4 }}>"{e.original}" → "{e.decoded}"</p>
-            ))}
+            <p className="rv-sub">ROT13</p>
+            {rot.slice(0, 5).map((e: any, i: number) => <code key={i} className="rv-code">"{e.original}" → "{e.decoded}"</code>)}
           </div>
         )}
-        {total === 0 && <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'rgba(255,255,255,0.4)', margin: 0 }}>No strings successfully decoded.</p>}
+        {total === 0 && <p className="rv-out-text">No strings were successfully decoded.</p>}
       </div>
     )
   }
 
   if (name === 'anti_debugging') {
     return (
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16 }}>
+      <div className="rv-out">
         {deo.identified_apis?.length > 0 && (
           <>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>Identified Anti-Debug APIs</p>
+            <p className="rv-sub">Identified Anti-Debug APIs</p>
             {deo.identified_apis.map((api: any, i: number) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 10px', background: 'rgba(255,0,137,0.06)', border: '1px solid rgba(255,0,137,0.15)', borderRadius: 6, marginBottom: 6 }}>
-                <span style={{ fontFamily: "'Courier New', monospace", fontSize: '0.82rem', color: '#FF0080' }}>{api.api}</span>
-                <span style={{ fontFamily: "'Courier New', monospace", fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)' }}>{api.dll} @ {api.address}</span>
+              <div key={i} className="rv-api">
+                <span>{api.api}</span>
+                <span>{api.dll} @ {api.address}</span>
               </div>
             ))}
           </>
@@ -455,26 +336,12 @@ function DeobfuscationOutput({ name, deo }: { name: string; deo: any }) {
 
   if (name === 'control_flow_obfuscation' || name === 'junk_code') {
     return (
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16 }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: '0 0 12px' }}>{deo.message}</p>
+      <div className="rv-out">
+        <p className="rv-out-text">{deo.message}</p>
         {deo.manual_steps?.length > 0 && <StepList steps={deo.manual_steps} label="Manual Steps" />}
       </div>
     )
   }
 
   return null
-}
-
-function StepList({ steps, label }: { steps: string[]; label?: string }) {
-  return (
-    <div style={{ marginTop: 12 }}>
-      {label && <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>{label}</p>}
-      {steps.map((s: string, i: number) => (
-        <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 6 }}>
-          <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '0.65rem', color: '#FF0080', marginTop: 2, flexShrink: 0 }}>{String(i + 1).padStart(2, '0')}</span>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: 1.6 }}>{s}</p>
-        </div>
-      ))}
-    </div>
-  )
 }

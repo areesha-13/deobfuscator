@@ -1,68 +1,115 @@
-import { useRef, useEffect, useCallback } from 'react'
+import { useRef, useEffect } from 'react'
 
-interface TrailDot {
+interface Heart {
   x: number
   y: number
-  age: number
+  born: number
   size: number
+  drift: number
+  rise: number
+  spin: number
+}
+
+const LIFE = 1100 // ms each heart lives
+const SPAWN_EVERY = 35 // ms between hearts while moving
+const MAX_HEARTS = 90
+const PINK = '255,0,137' // #FF0089
+
+function heartPath(ctx: CanvasRenderingContext2D, s: number) {
+  // Heart centred on (0, 0), roughly s wide and s tall
+  const t = s * 0.3
+  ctx.beginPath()
+  ctx.moveTo(0, t - s / 2)
+  ctx.bezierCurveTo(0, -s / 2, -s / 2, -s / 2, -s / 2, t - s / 2)
+  ctx.bezierCurveTo(-s / 2, (s + t) / 2 - s / 2, 0, (s + t) / 2 - s / 2, 0, s / 2)
+  ctx.bezierCurveTo(0, (s + t) / 2 - s / 2, s / 2, (s + t) / 2 - s / 2, s / 2, t - s / 2)
+  ctx.bezierCurveTo(s / 2, -s / 2, 0, -s / 2, 0, t - s / 2)
+  ctx.closePath()
 }
 
 export function useMouseTrail() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const dotsRef = useRef<TrailDot[]>([])
-  const mouseRef = useRef({ x: -999, y: -999 })
-  const rafRef = useRef<number>(0)
-
-  const draw = useCallback(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    dotsRef.current.push({
-      x: mouseRef.current.x,
-      y: mouseRef.current.y,
-      age: 0,
-      size: 10 + Math.random() * 6,
-    })
-    dotsRef.current = dotsRef.current
-      .map(d => ({ ...d, age: d.age + 0.025 }))
-      .filter(d => d.age < 1)
-    for (const d of dotsRef.current) {
-      const alpha = 1 - d.age
-      const radius = d.size * (1 - d.age * 0.5)
-      const grad = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, radius * 3)
-      grad.addColorStop(0, `rgba(255,0,137,${alpha * 0.9})`)
-      grad.addColorStop(0.4, `rgba(255,0,137,${alpha * 0.4})`)
-      grad.addColorStop(1, `rgba(255,0,137,0)`)
-      ctx.beginPath()
-      ctx.arc(d.x, d.y, radius * 3, 0, Math.PI * 2)
-      ctx.fillStyle = grad
-      ctx.fill()
-    }
-    rafRef.current = requestAnimationFrame(draw)
-  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    let hearts: Heart[] = []
+    let last = 0
+    let raf = 0
+    let dpr = 1
+
     const resize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
+      dpr = Math.min(window.devicePixelRatio || 1, 2)
+      canvas.width = window.innerWidth * dpr
+      canvas.height = window.innerHeight * dpr
     }
     resize()
     window.addEventListener('resize', resize)
-    const onMove = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY }
+
+    const spawn = (x: number, y: number) => {
+      const now = performance.now()
+      if (now - last < SPAWN_EVERY) return
+      last = now
+      hearts.push({
+        x,
+        y,
+        born: now,
+        size: 12 + Math.random() * 14,
+        drift: (Math.random() - 0.5) * 50,
+        rise: 40 + Math.random() * 40,
+        spin: (Math.random() - 0.5) * 0.9,
+      })
+      if (hearts.length > MAX_HEARTS) hearts = hearts.slice(-MAX_HEARTS)
+    }
+
+    const onMove = (e: MouseEvent) => spawn(e.clientX, e.clientY)
+    const onTouch = (e: TouchEvent) => {
+      const t = e.touches[0]
+      if (t) spawn(t.clientX, t.clientY)
     }
     window.addEventListener('mousemove', onMove)
-    rafRef.current = requestAnimationFrame(draw)
+    window.addEventListener('touchmove', onTouch, { passive: true })
+
+    const draw = () => {
+      const now = performance.now()
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+
+      hearts = hearts.filter(h => now - h.born < LIFE)
+
+      for (const h of hearts) {
+        const p = (now - h.born) / LIFE // 0 -> 1
+        const ease = 1 - Math.pow(1 - p, 2)
+        const alpha = 1 - p
+        const scale = 0.55 + ease * 0.9
+        const x = h.x + h.drift * ease
+        const y = h.y - h.rise * ease
+
+        ctx.save()
+        ctx.translate(x, y)
+        ctx.rotate(h.spin * ease)
+        ctx.shadowColor = `rgba(${PINK},${alpha})`
+        ctx.shadowBlur = 16
+        ctx.fillStyle = `rgba(${PINK},${alpha * 0.95})`
+        heartPath(ctx, h.size * scale)
+        ctx.fill()
+        ctx.restore()
+      }
+      raf = requestAnimationFrame(draw)
+    }
+    raf = requestAnimationFrame(draw)
+
     return () => {
       window.removeEventListener('resize', resize)
       window.removeEventListener('mousemove', onMove)
-      cancelAnimationFrame(rafRef.current)
+      window.removeEventListener('touchmove', onTouch)
+      cancelAnimationFrame(raf)
     }
-  }, [draw])
+  }, [])
 
   return canvasRef
 }
