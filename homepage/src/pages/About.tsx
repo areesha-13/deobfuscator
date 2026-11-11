@@ -27,12 +27,15 @@ export default function About() {
 
         <Reveal>
           <section className="rv-block">
-            <h2 className="rv-h2">Why Existing Tools Fall Short</h2>
+            <h2 className="rv-h2">Why Reversor Matters</h2>
             <p className="rv-p">
-              The reverse engineering toolchain today is fragmented. Ghidra and IDA Pro are industry-standard disassemblers, but they require significant expertise and produce raw assembly output. FLOSS recovers obfuscated strings but only addresses one technique. Detect-It-Easy identifies packers but cannot reverse them. No single tool handles the full obfuscation identification and reversal pipeline.
+              Obfuscation exists to waste an analyst's time. Packed executables, encoded strings, and scrambled control flow hide what a file actually does, and working through each layer by hand takes specialist knowledge and a lot of patience. Until the obfuscation is understood, nothing else about the file can be trusted.
             </p>
             <p className="rv-p">
-              More critically, none of these tools produce output that a non-technical stakeholder can read. A security manager or incident responder who needs to understand what a suspicious binary does cannot use raw disassembly. Reversor was built to close that gap with automated analysis, plain-English output, and exportable reports.
+              Reversor handles that first step automatically. It identifies which obfuscation techniques are present, reverses the ones it can, and explains each finding in plain English, so the person reading the report does not need a background in assembly to understand it.
+            </p>
+            <p className="rv-p">
+              That makes triage faster and puts the answer within reach of the people who need it: incident responders deciding what to do next, managers who need a clear summary, and students learning how obfuscation works. Every report can be exported as a PDF to share with the wider team.
             </p>
           </section>
         </Reveal>
@@ -59,10 +62,10 @@ export default function About() {
               Reversor uses a static analysis pipeline built on PE file parsing, entropy analysis, import table inspection, and control flow heuristics. Features are extracted from the binary and scored independently for each obfuscation category, producing a confidence value per technique.
             </p>
             <p className="rv-p">
-              Where detection is confirmed, targeted deobfuscation routines run automatically: UPX unpacking for packed binaries, XOR brute force and Base64 decoding for obfuscated strings, and API identification with patch guidance for anti-debugging techniques.
+              Where a technique is detected, the matching routine runs: UPX unpacking for packed binaries, XOR brute force with Base64 and ROT13 decoding for obfuscated strings, and API identification with patch guidance for anti-debugging. Control flow obfuscation and junk code are detected and explained, with guidance for manual follow-up.
             </p>
             <p className="rv-p">
-              All analysis is static. The binary is never executed, which makes the tool safe to use with suspicious or malicious files.
+              Reversor focuses on one job: identifying and reversing obfuscation. It is not a disassembler or a decompiler. All analysis is static, so the binary is never executed, which makes the tool safe to use with suspicious files.
             </p>
           </section>
         </Reveal>

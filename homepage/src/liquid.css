@@ -76,7 +76,7 @@
 }
 
 /* ============================================================
-   BUTTONS (glossy pill)
+   BUTTONS (black glass pill, pink hue behind on hover)
    ============================================================ */
 .rv-btn {
   position: relative;
@@ -96,53 +96,61 @@
   cursor: pointer;
   padding: 16px 38px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  background: linear-gradient(180deg, #ff63b6 0%, #FF0089 48%, #c20069 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.55) 55%, rgba(0, 0, 0, 0.62) 100%);
+  -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  backdrop-filter: blur(14px) saturate(1.5);
   box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.55),
-    inset 0 -8px 14px rgba(110, 0, 56, 0.4),
-    0 10px 28px rgba(255, 0, 137, 0.5),
-    0 0 60px rgba(255, 0, 137, 0.25);
-  text-shadow: 0 1px 2px rgba(80, 0, 40, 0.5);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    0 8px 24px rgba(0, 0, 0, 0.5);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.3s ease;
 }
+/* pink hue behind the glass, fades in on hover */
+.rv-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(120% 150% at 50% 130%, rgba(255, 0, 137, 0.6), rgba(255, 0, 137, 0.16) 55%, transparent 80%);
+  transition: opacity 0.3s ease;
+}
+/* soft top sheen */
 .rv-btn::after {
   content: '';
   position: absolute;
   z-index: -1;
-  left: 8%;
-  right: 8%;
-  top: 3px;
-  height: 42%;
+  left: 10%;
+  right: 10%;
+  top: 2px;
+  height: 38%;
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0));
   pointer-events: none;
 }
 .rv-btn:hover {
   transform: translateY(-2px);
-  filter: brightness(1.08);
+  border-color: rgba(255, 0, 137, 0.7);
   box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.6),
-    inset 0 -8px 14px rgba(110, 0, 56, 0.4),
-    0 14px 36px rgba(255, 0, 137, 0.65),
-    0 0 80px rgba(255, 0, 137, 0.4);
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    0 0 34px rgba(255, 0, 137, 0.45),
+    0 0 70px rgba(255, 0, 137, 0.2);
 }
+.rv-btn:hover::before { opacity: 1; }
 .rv-btn:active { transform: translateY(0) scale(0.985); }
-.rv-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; filter: none; }
+.rv-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.rv-btn:disabled:hover {
+  transform: none;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+.rv-btn:disabled:hover::before { opacity: 0; }
 .rv-btn-sm { padding: 10px 22px; font-size: 0.68rem; }
-.rv-btn-ghost {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.05));
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 8px 24px rgba(0, 0, 0, 0.4);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  text-shadow: none;
-}
-.rv-btn-ghost::after { display: none; }
-.rv-btn-ghost:hover {
-  border-color: rgba(255, 0, 137, 0.65);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 10px 30px rgba(255, 0, 137, 0.3);
-}
+.rv-btn-ghost { background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.4)); }
 
 /* ============================================================
    NAVBAR + FOOTER
@@ -354,12 +362,6 @@
 
 @keyframes rv-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
 @keyframes rv-shadow { 0%, 100% { opacity: 0.9; transform: translateX(-50%) scale(1); } 50% { opacity: 0.55; transform: translateX(-50%) scale(0.85); } }
-
-.rv-stats { display: grid; grid-template-columns: repeat(4, 1fr); border-radius: 999px; padding: 18px 12px; }
-.rv-stat { text-align: center; padding: 0 12px; border-right: 1px solid rgba(255, 255, 255, 0.1); }
-.rv-stat:last-child { border-right: 0; }
-.rv-stat-v { font-family: var(--rv-display); font-weight: 900; font-size: 1.5rem; color: var(--rv-pink); text-shadow: 0 0 14px rgba(255, 0, 137, 0.7); }
-.rv-stat-l { font-size: 0.72rem; color: var(--rv-dim); margin-top: 4px; }
 
 /* ============================================================
    LIVE DEMO
@@ -599,8 +601,6 @@
   .rv-hero-art { --s: min(56vw, 300px); }
   .rv-chip-a { left: 0; }
   .rv-chip-b { right: 0; }
-  .rv-stats { grid-template-columns: 1fr 1fr; border-radius: 28px; row-gap: 18px; }
-  .rv-stat:nth-child(2) { border-right: 0; }
   .rv-features { grid-template-columns: 1fr; }
   .rv-feature, .rv-feature:nth-child(n + 4) { grid-column: auto; }
   .rv-steps { grid-template-columns: 1fr; }

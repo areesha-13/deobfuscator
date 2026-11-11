@@ -19,13 +19,6 @@ const steps = [
   { n: '03', t: 'Report', d: 'Get a plain-English breakdown of every detected technique, decoded strings, patch guidance, and a downloadable PDF.' },
 ]
 
-const stats = [
-  { v: '5', l: 'Techniques Detected' },
-  { v: '3', l: 'Deobfuscation Methods' },
-  { v: '< 10s', l: 'Analysis Time' },
-  { v: 'PDF', l: 'Exportable Reports' },
-]
-
 const demoSteps = [
   { label: 'Parsing PE headers...', delay: 0 },
   { label: 'Calculating section entropy...', delay: 600 },
@@ -164,7 +157,7 @@ export default function Landing() {
           <div className="rv-hero-grid">
             <div className="rv-hero-copy">
               <h1 className="rv-title">REVERSOR</h1>
-              <p className="rv-tagline">Automated Reverse Engineering, Built for Everyone.</p>
+              <p className="rv-tagline">Automated Deobfuscation, Built for Everyone.</p>
               <div>
                 <button className="rv-btn" onClick={() => navigate('/tool')}>Analyze a Binary</button>
               </div>
@@ -179,26 +172,18 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="rv-stats lg">
-            {stats.map(s => (
-              <div key={s.l} className="rv-stat">
-                <div className="rv-stat-v">{s.v}</div>
-                <div className="rv-stat-l">{s.l}</div>
-              </div>
-            ))}
-          </div>
         </section>
 
         {/* ---------- PROBLEM ---------- */}
         <section className="rv-section">
           <Reveal>
             <div className="rv-panel lg">
-              <h2 className="rv-h2">Reverse Engineering Is Fragmented. Reversor Unifies It.</h2>
+              <h2 className="rv-h2">Obfuscation Hides Intent. Reversor Reveals It.</h2>
               <p className="rv-p">
-                Security analysts today switch between Ghidra, IDA Pro, FLOSS, and Detect-It-Easy just to understand a single binary. Each tool solves one piece of the problem. None of them talk to each other, and none produce output a non-technical stakeholder can read.
+                Packers, string encoders, and scrambled control flow are used to hide what a file really does. Untangling them by hand takes specialist knowledge and a lot of time, and the results are rarely written for anyone outside the analyst's team.
               </p>
               <p className="rv-p">
-                Reversor is the unified layer. One upload, one pipeline, one plain-English report, covering identification and reversal of the most common obfuscation techniques.
+                Reversor automates that step. Upload a binary, and it identifies the obfuscation techniques present, reverses what it can, and explains everything in plain English.
               </p>
             </div>
           </Reveal>
@@ -247,7 +232,7 @@ export default function Landing() {
           <Reveal>
             <div className="rv-cta lg">
               <h2 className="rv-h2">Ready to Analyze a Binary?</h2>
-              <p>No Account Required. Upload Directly and Get Results in Seconds.</p>
+              <p>No Account Required. Upload a Binary and Get a Readable Report.</p>
               <button className="rv-btn" onClick={() => navigate('/tool')}>Launch Reversor →</button>
             </div>
           </Reveal>
